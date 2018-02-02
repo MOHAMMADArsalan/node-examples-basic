@@ -1,5 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const { ObjectID } = require("mongodb")
 
 const config = require("./config/config");
 const { mongoose } = require("./db/mongoose");
@@ -31,6 +32,21 @@ app.get('/api/todos', (req, res) => {
     })
 })
 
+app.get("/api/todos/:id", (req, res) => {
+    const { id } = req.params;
+    if (!ObjectID.isValid(id)) {
+        return res.status(404).send(null)
+    }
+
+    Todo.findById(id).then(todo => {
+        if (!todo) {
+            return res.status(404).send(null)
+        }
+        return res.status(200).send({ todo })
+    }).catch(e => {
+        res.status(400).send(null)
+    })
+})
 
 app.listen(config.PORT, () => {
     console.log(`Started server on PORT: ${config.PORT}`)
