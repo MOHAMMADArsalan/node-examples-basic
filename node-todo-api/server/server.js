@@ -2,6 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const { ObjectID } = require("mongodb")
 const _ = require("lodash");
+const bcrypt = require("bcryptjs");
 
 const config = require("./config/config");
 const { mongoose } = require("./db/mongoose");
@@ -113,6 +114,19 @@ app.post('/api/users', (req, res) => {
         .then((token) => res.header('x-auth', token).status(200).send(newUser))
         .catch(e => res.status(400).send('Unable to create new User'))
 
+})
+
+// POST /api/users/login
+
+app.post('/api/users/login', (req, res) => {
+    const { email, password } = req.body;
+    User.findByCredentials(email, password)
+        .then((user) => {
+            user.generateAuthToken().then(token => {
+                return res.status(200).header('x-auth', token).send(user)
+            })
+        })
+        .catch(e => res.status(400).send())
 })
 
 
