@@ -1,0 +1,6 @@
+{
+    "env": {
+        "DB_USER_NAME": "shop-app",
+        "DB_USER_PASSWORD": "shop-app"
+    }
+}

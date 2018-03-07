@@ -13,10 +13,11 @@ const app = express();
 
 app.use(bodyParser.json());
 
-app.post('/api/todos', (req, res) => {
+app.post('/api/todos', authenticate, (req, res) => {
 
     const newTodo = new Todo({
-        text: req.body.text
+        text: req.body.text,
+        _creator: req.user._id
     });
 
     newTodo.save().then(doc => {
@@ -26,8 +27,10 @@ app.post('/api/todos', (req, res) => {
     })
 });
 
-app.get('/api/todos', (req, res) => {
-    Todo.find().then(todos => {
+app.get('/api/todos', authenticate, (req, res) => {
+    Todo.find({
+        _creator: req.user._id
+    }).then(todos => {
         res.send({ todos })
     }).catch(e => {
         res.status(400).send(e)
@@ -135,6 +138,14 @@ app.get('/api/users/me', authenticate, (req, res) => {
     const token = req.header('x-auth');
     res.send(req.user)
 
+})
+
+// DELETE /api/users/token
+
+app.delete('/api/users/me/token', authenticate, (req, res) => {
+    req.user.removeToken(req.token).then(() => {
+        res.status(200).send()
+    }).catch(e => res.status(401).send())
 })
 
 app.listen(config.PORT, () => {

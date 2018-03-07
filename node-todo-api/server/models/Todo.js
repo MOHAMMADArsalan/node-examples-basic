@@ -1,4 +1,4 @@
-const  mongoose  = require("mongoose");
+const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
 
@@ -16,6 +16,10 @@ const TodoSchema = new Schema({
     completedAt: {
         type: Number,
         default: null
+    },
+    _creator: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true
     }
 })
 
